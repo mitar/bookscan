@@ -141,7 +141,7 @@ for input_directory in sys.argv[1:]:
     right_images += get_images(input_directory, 'right')
 
 if len(left_images) != len(right_images):
-    print "Number of left images does not match right images"
+    print "Number of left images (%s) does not match right images (%s)" % (len(left_images), len(right_images))
     sys.exit(1)
 
 if len(left_images) == 0:
