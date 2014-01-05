@@ -29,10 +29,10 @@ class GetCropCoordinatesApp(tk.Tk):
         top = 0
         width, height = self.winfo_screenwidth() - 100, self.winfo_screenheight() - 100
         
-        imageWidth, imageHeight = image.size
+        self.imageWidth, self.imageHeight = image.size
         
-        self.xRatio = imageWidth / float(width)
-        self.yRatio = imageHeight / float(height)
+        self.xRatio = self.imageWidth / float(width)
+        self.yRatio = self.imageHeight / float(height)
 
         image = image.resize((width, height), Image.ANTIALIAS)
     
@@ -69,6 +69,15 @@ class GetCropCoordinatesApp(tk.Tk):
             self.results['left'], self.results['right'] = self.results['right'], self.results['left']
         if self.results['top'] is not None and self.results['bottom'] is not None and self.results['bottom'] < self.results['top']:
             self.results['top'], self.results['bottom'] = self.results['bottom'], self.results['top']
+
+        if self.results['left'] is not None and self.results['left'] < 0:
+            self.results['left'] = 0
+        if self.results['right'] is not None and self.results['right'] > self.imageWidth:
+            self.results['right'] = self.imageWidth
+        if self.results['top'] is not None and self.results['top'] < 0:
+            self.results['top'] = 0
+        if self.results['bottom'] is not None and self.results['bottom'] > self.imageHeight:
+            self.results['bottom'] = self.imageHeight
 
     def on_crop(self):
         self.results['left'] = self.x0
