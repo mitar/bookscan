@@ -117,7 +117,7 @@ def get_crop_coordinates(imageName):
     return results
 
 def get_images(input_directory, side):
-    for file in os.listdir(os.path.join(input_directory, side)):
+    for file in sorted(os.listdir(os.path.join(input_directory, side))):
         path = os.path.join(input_directory, side, file)
         if os.path.isfile(path) and not file.startswith('.'):
             yield path
