@@ -3,7 +3,6 @@
 LANG=C
 PTPCAM='/usr/local/bin/ptpcam'
 ZOOM=23
-FOCUS=100
 
 function detect_cams {
   CAMS=$(gphoto2 --auto-detect|grep usb| wc -l)
@@ -73,11 +72,10 @@ function set_focus {
   echo "Setting cameras focus..."
   echo "Setting left camera focus to $FOCUS..."
   $PTPCAM --dev=$LEFTCAM --chdk="lua set_mf(1)"
-  $PTPCAM --dev=$LEFTCAM --chdk="luar set_focus($FOCUS)"
+  $PTPCAM --dev=$LEFTCAM --chdk="lua set_focus($FOCUS)"
   echo "Setting left camera focus to $FOCUS..."
   $PTPCAM --dev=$LEFTCAM --chdk="lua set_mf(1)"
-  $PTPCAM --dev=$LEFTCAM --chdk="luar set_focus($FOCUS)"
-  sleep 3s
+  $PTPCAM --dev=$LEFTCAM --chdk="lua set_focus($FOCUS)"
 }
 
 function flash_off {
@@ -105,7 +103,6 @@ function set_ndfilter {
 detect_cams
 switch_to_record_mode
 set_zoom
-set_focus
 flash_off
 set_iso
 set_ndfilter
@@ -113,23 +110,24 @@ set_ndfilter
 $PTPCAM --dev=$LEFTCAM --chdk='lua play_sound(0)'
 
 # Shooting loop
-echo "Starting shooting loop..."
-while true; do
-  # watch foot pedal if it is pressed
-  read -n1 shoot
-  if [ "$shoot" == "b" ]; then
-    echo "Key pressed."
-    echo "Shooting with cameras $LEFTCAM (left) and $RIGHTCAM (right)"
-    # TODO: try to make safely switching cameras faster: chdkptp with multicam module? lua tricks? (multiple seconds wait between triggering cams necessary now)
+echo "Starting focus calibration..."
+for focus in {70..100}; do
     set_iso
     # shutter speed needs to be set before every shot
     $PTPCAM --dev=$LEFTCAM --chdk="luar set_tv96(320)"
+    $PTPCAM --dev=$LEFTCAM --chdk='lua set_focus($focus)'
+	sleep 1s
     $PTPCAM --dev=$LEFTCAM --chdk='lua shoot()'
     sleep 2s
     # shutter speed needs to be set before every shot
     $PTPCAM --dev=$RIGHTCAM --chdk="luar set_tv96(320)"
+    $PTPCAM --dev=$RIGHTCAM --chdk='lua set_focus($focus)'
+	sleep 1s
     $PTPCAM --dev=$RIGHTCAM --chdk='lua shoot()'
     sleep 2s
+    echo "Left set to $focus, got $($PTPCAM --dev=$LEFTCAM --chdk="luar get_focus()")"
+    echo "Right set to $focus, got $($PTPCAM --dev=$RIGHTCAM --chdk="luar get_focus()")"
+    sleep 1s
   fi
 done # end shooting loop
 
