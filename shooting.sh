@@ -107,8 +107,8 @@ while true; do
 	$PTPCAM --dev=$LEFTCAM --chdk="lua set_tv96(320)"
 	$PTPCAM --dev=$RIGHTCAM --chdk="lua set_tv96(320)"
 	sleep 1s
-    $PTPCAM --dev=$LEFTCAM --chdk="lua set_focus($focus)"
-    $PTPCAM --dev=$RIGHTCAM --chdk="lua set_focus($focus)"
+    $PTPCAM --dev=$LEFTCAM --chdk="lua set_focus($FOCUS)"
+    $PTPCAM --dev=$RIGHTCAM --chdk="lua set_focus($FOCUS)"
     sleep 3s
     $PTPCAM --dev=$LEFTCAM --chdk='lua shoot()'
     sleep 1s # So that it is easier to hear both shoots
