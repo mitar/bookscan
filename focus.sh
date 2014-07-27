@@ -98,6 +98,9 @@ $PTPCAM --dev=$RIGHTCAM --chdk='lua play_sound(0)'
 # Shooting loop
 echo "Starting focus calibration..."
 for focus in {375..385}; do
+  $PTPCAM --dev=$LEFTCAM --chdk="lua set_tv96(320)"
+  $PTPCAM --dev=$RIGHTCAM --chdk="lua set_tv96(320)"
+  sleep 1s
   $PTPCAM --dev=$LEFTCAM --chdk="lua set_focus($focus)"
   $PTPCAM --dev=$RIGHTCAM --chdk="lua set_focus($focus)"
   sleep 3s
