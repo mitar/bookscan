@@ -71,17 +71,14 @@ function flash_off {
 }
 
 function set_iso {
-  echo "Setting ISO mode..."
   $PTPCAM --dev=$LEFTCAM --chdk="lua set_iso_real(50)"
   $PTPCAM --dev=$RIGHTCAM --chdk="lua set_iso_real(50)"
-  sleep 1s
 }
 
 function set_ndfilter {
-  echo "Disabling neutrality density filer... See http://chdk.wikia.com/wiki/ND_Filter."
+  # See http://chdk.wikia.com/wiki/ND_Filter
   $PTPCAM --dev=$LEFTCAM --chdk="luar set_nd_filter(2)"
   $PTPCAM --dev=$RIGHTCAM --chdk="luar set_nd_filter(2)"
-  sleep 1s
 }
 
 # The action starts here
@@ -90,8 +87,6 @@ detect_cams
 switch_to_record_mode
 set_zoom
 flash_off
-set_iso
-set_ndfilter
 
 $PTPCAM --dev=$LEFTCAM --chdk='lua play_sound(0)'
 $PTPCAM --dev=$RIGHTCAM --chdk='lua play_sound(0)'
@@ -104,17 +99,17 @@ while true; do
   if [ "$shoot" == "b" ]; then
     echo "Key pressed."
     echo "Shooting with cameras $LEFTCAM (left) and $RIGHTCAM (right)"
-	set_iso
-	$PTPCAM --dev=$LEFTCAM --chdk="lua set_tv96(320)"
-	$PTPCAM --dev=$RIGHTCAM --chdk="lua set_tv96(320)"
-	sleep 1s
+    set_iso
+    $PTPCAM --dev=$LEFTCAM --chdk="lua set_user_tv96(320)"
+    $PTPCAM --dev=$RIGHTCAM --chdk="lua set_user_tv96(320)"
+    set_ndfilter
     $PTPCAM --dev=$LEFTCAM --chdk="lua set_focus($FOCUS)"
     $PTPCAM --dev=$RIGHTCAM --chdk="lua set_focus($FOCUS)"
-    sleep 3s
+    sleep 1s
     $PTPCAM --dev=$LEFTCAM --chdk='lua shoot()'
     sleep 1s # So that it is easier to hear both shoots
     $PTPCAM --dev=$RIGHTCAM --chdk='lua shoot()'
-    sleep 4s
+    sleep 3s
   fi
 done # end shooting loop
 
