@@ -104,6 +104,7 @@ while true; do
   if [ "$shoot" == "b" ]; then
     echo "Key pressed."
     echo "Shooting with cameras $LEFTCAM (left) and $RIGHTCAM (right)"
+	set_iso
 	$PTPCAM --dev=$LEFTCAM --chdk="lua set_tv96(320)"
 	$PTPCAM --dev=$RIGHTCAM --chdk="lua set_tv96(320)"
 	sleep 1s
