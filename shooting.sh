@@ -104,8 +104,8 @@ while true; do
   if [ "$shoot" == "b" ]; then
     echo "Key pressed."
     echo "Shooting with cameras $LEFTCAM (left) and $RIGHTCAM (right)"
-    $PTPCAM --dev=$LEFTCAM --chdk="lua set_focus($focus)"
-    $PTPCAM --dev=$RIGHTCAM --chdk="lua set_focus($focus)"
+    $PTPCAM --dev=$LEFTCAM --chdk="lua set_focus($FOCUS)"
+    $PTPCAM --dev=$RIGHTCAM --chdk="lua set_focus($FOCUS)"
     sleep 3s
     $PTPCAM --dev=$LEFTCAM --chdk='lua shoot()'
     sleep 1s # So that it is easier to hear both shoots
