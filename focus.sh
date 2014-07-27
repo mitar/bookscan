@@ -49,11 +49,8 @@ function detect_cams {
 
 function switch_to_record_mode {
   echo "Switching cameras to record mode..."
-  echo "$LEFTCAM is LEFTCAM and $RIGHTCAM is RIGHTCAM"
-  echo "Switching left camera to record mode and sleeping 1 second..."
-  $PTPCAM --dev=$LEFTCAM --chdk='mode 1' > /dev/null 2>&1 && sleep 1s
-  echo "Switching right camera to record mode and sleeping 1 second..."
-  $PTPCAM --dev=$RIGHTCAM --chdk='mode 1' > /dev/null 2>&1 && sleep 1s
+  $PTPCAM --dev=$LEFTCAM --chdk='mode 1'
+  $PTPCAM --dev=$RIGHTCAM --chdk='mode 1'
   sleep 3s
 }
 
@@ -61,41 +58,30 @@ function switch_to_record_mode {
 function set_zoom {
   # TODO: make less naive about zoom setting (check before and after setting, ...)
   echo "Setting cameras zoom to $ZOOM..."
-  echo "Setting left camera zoom to $ZOOM..."
   $PTPCAM --dev=$LEFTCAM --chdk="lua while(get_zoom()~=$ZOOM) do set_zoom($ZOOM) end"
-  echo "Setting right camera zoom to $ZOOM..."
   $PTPCAM --dev=$RIGHTCAM --chdk="lua while(get_zoom()~=$ZOOM) do set_zoom($ZOOM) end"
   sleep 3s
-}
-
-function set_focus {
-  echo "Setting cameras focus..."
-  echo "Setting left camera focus to $FOCUS..."
-  $PTPCAM --dev=$LEFTCAM --chdk="lua set_mf(1)"
-  $PTPCAM --dev=$LEFTCAM --chdk="lua set_focus($FOCUS)"
-  echo "Setting left camera focus to $FOCUS..."
-  $PTPCAM --dev=$LEFTCAM --chdk="lua set_mf(1)"
-  $PTPCAM --dev=$LEFTCAM --chdk="lua set_focus($FOCUS)"
 }
 
 function flash_off {
   echo "Switching flash off..."
   $PTPCAM --dev=$LEFTCAM --chdk='lua while(get_flash_mode()<2) do click("right") end'
   $PTPCAM --dev=$RIGHTCAM --chdk='lua while(get_flash_mode()<2) do click("right") end'
+  sleep 1s
 }
 
 function set_iso {
-    #echo "Setting ISO mode to 1 for left cam."
-    ptpcam --dev=$LEFTCAM --chdk="lua set_iso_real(50)"
-    #echo "Setting ISO mode to 1 for right cam."
-    ptpcam --dev=$RIGHTCAM --chdk="lua set_iso_real(50)"
+  echo "Setting ISO mode..."
+  $PTPCAM --dev=$LEFTCAM --chdk="lua set_iso_real(50)"
+  $PTPCAM --dev=$RIGHTCAM --chdk="lua set_iso_real(50)"
+  sleep 1s
 }
 
 function set_ndfilter {
-    #echo "Disabling neutrality density filter for $LEFTCAM. See http://chdk.wikia.com/wiki/ND_Filter."
-    ptpcam --dev=$LEFTCAM --chdk="luar set_nd_filter(2)"
-    echo "Disabling neutrality density filter for $RIGHTCAM. See http://chdk.wikia.com/wiki/ND_Filter."
-    ptpcam --dev=$RIGHTCAM --chdk="luar set_nd_filter(2)"
+  echo "Disabling neutrality density filer... See http://chdk.wikia.com/wiki/ND_Filter."
+  $PTPCAM --dev=$LEFTCAM --chdk="luar set_nd_filter(2)"
+  $PTPCAM --dev=$RIGHTCAM --chdk="luar set_nd_filter(2)"
+  sleep 1s
 }
 
 # The action starts here
@@ -108,26 +94,19 @@ set_iso
 set_ndfilter
 
 $PTPCAM --dev=$LEFTCAM --chdk='lua play_sound(0)'
+$PTPCAM --dev=$RIGHTCAM --chdk='lua play_sound(0)'
 
 # Shooting loop
 echo "Starting focus calibration..."
-for focus in {70..100}; do
-    set_iso
-    # shutter speed needs to be set before every shot
-    $PTPCAM --dev=$LEFTCAM --chdk="luar set_tv96(320)"
-    $PTPCAM --dev=$LEFTCAM --chdk='lua set_focus($focus)'
-	sleep 1s
-    $PTPCAM --dev=$LEFTCAM --chdk='lua shoot()'
-    sleep 2s
-    # shutter speed needs to be set before every shot
-    $PTPCAM --dev=$RIGHTCAM --chdk="luar set_tv96(320)"
-    $PTPCAM --dev=$RIGHTCAM --chdk='lua set_focus($focus)'
-	sleep 1s
-    $PTPCAM --dev=$RIGHTCAM --chdk='lua shoot()'
-    sleep 2s
-    echo "Left set to $focus, got $($PTPCAM --dev=$LEFTCAM --chdk="luar get_focus()")"
-    echo "Right set to $focus, got $($PTPCAM --dev=$RIGHTCAM --chdk="luar get_focus()")"
-    sleep 1s
-  fi
+for focus in {375..385}; do
+  $PTPCAM --dev=$LEFTCAM --chdk="lua set_focus($focus)"
+  $PTPCAM --dev=$RIGHTCAM --chdk="lua set_focus($focus)"
+  sleep 3s
+  $PTPCAM --dev=$LEFTCAM --chdk='lua shoot()'
+  sleep 1s # So that it is easier to hear both shoots
+  $PTPCAM --dev=$RIGHTCAM --chdk='lua shoot()'
+  sleep 4s
+  echo "Left set to $focus, got $($PTPCAM --dev=$LEFTCAM --chdk="luar get_focus()")"
+  echo "Right set to $focus, got $($PTPCAM --dev=$RIGHTCAM --chdk="luar get_focus()")"
+  sleep 1s
 done # end shooting loop
-
