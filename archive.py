@@ -164,14 +164,14 @@ if os.path.exists('output'):
 print "Processing left images: %s" % ', '.join(left_images)
 print "Processing right images: %s" % ', '.join(right_images)
 
-left_crop = get_crop_coordinates(left_images[0])
+left_crop = get_crop_coordinates(left_images[7])
 
 for c in left_crop.values():
     if c is None:
         print "No crop coordinates"
         sys.exit(4)
 
-right_crop = get_crop_coordinates(right_images[0])
+right_crop = get_crop_coordinates(right_images[7])
 
 for c in right_crop.values():
     if c is None:
