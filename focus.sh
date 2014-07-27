@@ -54,7 +54,6 @@ function switch_to_record_mode {
   sleep 3s
 }
 
-
 function set_zoom {
   # TODO: make less naive about zoom setting (check before and after setting, ...)
   echo "Setting cameras zoom to $ZOOM..."
